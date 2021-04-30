@@ -1,3 +1,4 @@
+console.log("Page Loaded");
 const baseAPIUrl = "http://localhost:3000/colors/";
 
 document
@@ -42,21 +43,25 @@ function createCard(color) {
   document.querySelector("#card-container").appendChild(card);
 }
 
-function handleVoteButton() {
+function handleVoteButton(e) {
+  e.preventDefault();
   const card = this.parentElement;
   addVote(card);
   updateColorOnAPI(card.data);
 }
 
-function handleDeleteButton() {
+function handleDeleteButton(e) {
+  e.preventDefault();
   const card = this.parentElement;
-  card.style.display = "none";
+  card.remove();
   removeColorFromAPI(card.data.id);
 }
 
-function handleAddColorButton() {
+function handleAddColorButton(e) {
+  e.preventDefault();
   let newCardData = createCardData();
   createCard(newCardData);
+  postNewCardToAPI(newCardData);
 }
 
 function postNewCardToAPI(cardData) {
@@ -91,15 +96,8 @@ function updateColorOnAPI(data) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data),
-  }); /* 
-    .then((response) => response.json())
-    .then((data) => {ß
-      console.log("Success:", data);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    }); */
+    body: JSON.stringify({ votes: data.votes }),
+  });
 }
 
 function removeColorFromAPI(id) {
