@@ -1,39 +1,109 @@
-fetch("http://localhost:3000/colors")
-    .then(response => response.json())
-    .then(json => {
-        for (let i in json) {
-            createCard(json[i]);
-        }
-    })
+const baseAPIUrl = "http://localhost:3000/colors/";
+
+document
+  .querySelector(".form-button")
+  .addEventListener("click", handleAddColorButton);
+
+fetch(baseAPIUrl)
+  .then((response) => response.json())
+  .then((json) => {
+    for (let i in json) {
+      createCard(json[i]);
+    }
+  })
+  .catch((error) => console.log(error));
 
 function createCard(color) {
+  const card = document.createElement("div");
+  const name = document.createElement("h2");
+  const votes = document.createElement("p");
+  const voteBtn = document.createElement("button");
+  const deleteBtn = document.createElement("button");
 
-    const card = document.createElement("div");
-    const name = document.createElement("h2");
-    const votes = document.createElement("p");
-    const voteBtn = document.createElement("button");
-    const deleteBtn = document.createElement("button");
+  card.classList.add("color-card");
+  card.style.background = color.hex;
+  card.data = color;
 
-    card.classList.add("color-card");
-    card.style.background = color.hex;
+  name.textContent = color.name;
+  votes.textContent = color.votes + " Votes";
 
-    name.textContent = color.name;
-    votes.textContent = color.votes + " Votes";
+  voteBtn.textContent = "+1 Vote!";
+  voteBtn.onclick = handleVoteButton;
 
-    voteBtn.textContent = "+1 Vote!";
-    voteBtn.onclick = addVoteToDisplay;
+  deleteBtn.textContent = "X";
+  deleteBtn.classList.add("delete-button");
+  deleteBtn.onclick = handleDeleteButton;
 
-    deleteBtn.textContent = "X";
-    deleteBtn.classList.add("delete-button");
+  card.appendChild(name);
+  card.appendChild(votes);
+  card.appendChild(voteBtn);
+  card.appendChild(deleteBtn);
 
-    card.appendChild(name);
-    card.appendChild(votes);
-    card.appendChild(voteBtn);
-    card.appendChild(deleteBtn);
-
-    document.querySelector("#card-container").appendChild(card);
+  document.querySelector("#card-container").appendChild(card);
 }
 
-function addVoteToDisplay() {
-    const currentText = this.parentElement.querySelector("p").innerHTML;
+function handleVoteButton() {
+  const card = this.parentElement;
+  addVote(card);
+  updateColorOnAPI(card.data);
+}
+
+function handleDeleteButton() {
+  const card = this.parentElement;
+  card.style.display = "none";
+  removeColorFromAPI(card.data.id);
+}
+
+function handleAddColorButton() {
+  let newCardData = createCardData();
+  createCard(newCardData);
+}
+
+function postNewCardToAPI(cardData) {
+  //TODO This isn't working yet
+  fetch(baseAPIUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(cardData),
+  });
+}
+
+function createCardData() {
+  const formData = new FormData(document.querySelector("form"));
+  let newColorData = {};
+  for (var pair of formData.entries()) {
+    newColorData[pair[0]] = pair[1];
+  }
+  newColorData.votes = 0;
+  return newColorData;
+}
+
+function addVote(card) {
+  card.data.votes += 1;
+  card.querySelector("p").innerHTML = card.data.votes + " Votes";
+}
+
+function updateColorOnAPI(data) {
+  fetch(baseAPIUrl + data.id, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }); /* 
+    .then((response) => response.json())
+    .then((data) => {ß
+      console.log("Success:", data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    }); */
+}
+
+function removeColorFromAPI(id) {
+  fetch(baseAPIUrl + id, {
+    method: "DELETE",
+  });
 }

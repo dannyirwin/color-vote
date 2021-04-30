@@ -4,13 +4,19 @@
       "id": 1,
       "name": "Pink",
       "hex": "#FFC0CB",
-      "votes": 0
+      "votes": 15
     },
     {
-        "id": 2,
-        "name": "Aqua",
-        "hex": "#00FFFF",
-        "votes": 0
+      "id": 1,
+      "name": "Red",
+      "hex": "#DF0000",
+      "votes": 15
+    },
+    {
+      "id": 1,
+      "name": "Blue",
+      "hex": "#0000CB",
+      "votes": 15
     }
   ]
 }
